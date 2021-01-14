@@ -25,7 +25,7 @@ namespace Coin
             var coinData = data as CoinData;
             var coinView = LeanPool.Spawn(_coinPrefab).GetComponent<CoinView>();
             
-            Debug.Log("Coin is generated");
+            //Debug.Log("Coin is generated");
 
             coinView.transform.position = coinData.Position;
             coinView.Amout = coinData.Amount;

@@ -23,13 +23,19 @@ namespace Utils
         // GAME MANAGER
         public const string GameIsOver = "GAME_IS_OVER";
         public const string WonGame = "WON_GAME";
-        
-        
+
         // WAVE GENERATOR
         public const string WaveStartedToBeGenerated = "WAVE_STARTED_TO_BE_GENERATED";
 
         // UNCATEGORIZED
         public const string GenerateCoin = "GENERATE_COIN";
+        
+        public const string OpenTowerBuildCatalog = "OPEN_TOWER_BUILD_CATALOG";
+        public const string OpenTowerMaintenanceCatalog = "OPEN_TOWER_MAINTENANCE_CATALOG";
+        public const string CloseTowerCatalog = "CLOSE_TOWER_CATALOG";
+
+        public const string ClickOutsideOfInteractiveArea = "CLICK_OUTSIDE_OF_INTERACTIVE_AREA";
+
 
         #endregion Custom Events
 

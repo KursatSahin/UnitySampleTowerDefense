@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Lean.Pool;
 using UnityEngine;
 using Utils;
@@ -11,6 +12,10 @@ namespace Coin
 
         public int Amout
         {
+            get
+            {
+                return _amout;
+            }
             set
             {
                 _amout = value;

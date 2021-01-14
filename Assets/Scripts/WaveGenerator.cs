@@ -78,7 +78,7 @@ public class WaveGenerator : MonoBehaviour, IEventManagerHandling
         for (int i = 0; i < wave.unitAmount; i++)
         {
             var soldier = LeanPool.Spawn(wave.unitPrefab, spawnPoint.position, Quaternion.Euler(0,0,0), unitsParent);
-            
+            EnemyManager.GetInstance().AddEnemy(soldier);
             yield return new WaitForSeconds(wave.delayTimeBetweenSpawns);
         }
     }

@@ -1,79 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Lean.Pool;
 using Units;
 using UnityEngine;
+using Utils;
 
 public class Tower : MonoBehaviour
 {
     [SerializeField] private TowerBase _towerBase;
-    
-    [SerializeField] private List<GameObject> _enemiesInRange;
-    
-    [SerializeField] private GameObject bulletFireEffect;
+
+    [SerializeField] private GameObject _bulletFireEffect;
+
+    [SerializeField] private GameObject _rangeCircle;
 
     private float timeToShoot = 0.0f;
 
     private void Awake()
     {
-        // Generate Queue
-        _enemiesInRange = new List<GameObject>();
-        
         // Set Range
-        this.GetComponent<CircleCollider2D>().radius = _towerBase.Range;
+        var transformLocalScale = _rangeCircle.transform.localScale;
+        transformLocalScale.x = transformLocalScale.y = _towerBase.Range;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out Enemy _))
-        {
-            _enemiesInRange.Add(other.gameObject);    
-        }
+        
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.TryGetComponent(out Enemy _))
-        {
-            if (_enemiesInRange.Contains(other.gameObject))
-            { 
-                _enemiesInRange.Remove(other.gameObject);
-            }
-        }
-    }
 
-    private GameObject GetClosestEnemy()
-    {
-        GameObject closest = null;
-        float minDistance = float.PositiveInfinity;
-        
-        if (_enemiesInRange.Count < 1)
-        {
-            return null;
-        }
-        else
-        {
-            foreach (var enemy in _enemiesInRange)
-            {
-                var distance = Vector3.Distance(enemy.transform.position, gameObject.transform.position);
-                
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    closest = enemy;
-                }
-            }
-            return closest;
-        }
-    }
-
-    private GameObject GetOldestEnemy()
-    {
-        return _enemiesInRange.Count > 0 ? _enemiesInRange[0] : null;
     }
 
     void FixedUpdate ()
     {
-        var enemy = _towerBase.TargetType == ShootingTargetType.First ? GetOldestEnemy() : GetClosestEnemy();
+        var enemy = _towerBase.TargetType == ShootingTargetType.First
+            ? EnemyManager.GetInstance().GetMostDistanceCoveredEnemyInRange(transform.position, _towerBase.Range)
+            : EnemyManager.GetInstance().GetClosestEnemyInRange(transform.position, _towerBase.Range);
 
         if (enemy != null)
         {
@@ -96,11 +59,11 @@ public class Tower : MonoBehaviour
 
                 shell.SetActive(true);
 
-                Debug.Log("bullet fired");
+                //Debug.Log("bullet fired");
                 
                 timeToShoot = _towerBase.FireRate;
 
-                if(bulletFireEffect != null) bulletFireEffect.SetActive(true);
+                if(_bulletFireEffect != null) _bulletFireEffect.SetActive(true);
                 
                 return;
             }
@@ -111,9 +74,9 @@ public class Tower : MonoBehaviour
             //TurnToEnemy(gameObject);
         }
 
-        if (bulletFireEffect != null && timeToShoot < _towerBase.FireRate * 0.7f && bulletFireEffect.activeSelf)
+        if (_bulletFireEffect != null && timeToShoot < _towerBase.FireRate * 0.7f && _bulletFireEffect.activeSelf)
         {
-            bulletFireEffect.SetActive(false);
+            _bulletFireEffect.SetActive(false);
         }
         
         timeToShoot -= Time.deltaTime;
