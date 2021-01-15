@@ -43,7 +43,8 @@ namespace Units
         private void GetDamaged(ShellBase shell)
         {
             // Despawn bullet
-            LeanPool.Despawn(shell.gameObject);
+            LeanPool.Despawn(shell.gameObject,.1f);   
+            
             // Decrease health of soldier
             _healthBar.value = _health -= shell.damage;
             // If necessary kill soldier
@@ -65,7 +66,7 @@ namespace Units
                 EventManager.GetInstance().Notify(Events.EnemyKilled);
                 EventManager.GetInstance().Notify(Events.GenerateCoin, new CoinData(this.transform.position, (int)enemyBase.maxHealth / 5));
             }
-
+            
             // TODO : play animation or tween here;
         }
 
@@ -73,8 +74,8 @@ namespace Units
         {
             if (waypoint.WType == Waypoint.WaypointType.Finish)
             {
-                Die();
                 UpdateRemainingLife(-1);
+                Die();
                 return;
             }
             else if (waypoint.WType == Waypoint.WaypointType.Start)

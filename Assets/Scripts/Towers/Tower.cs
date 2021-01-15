@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
+using DG.Tweening;
 using Lean.Pool;
 using Units;
 using UnityEngine;
 
-public class Tower : MonoBehaviour
+public class Tower : MonoBehaviour, IEventManagerHandling
 {
     [SerializeField] private TowerBase _towerBase;
 
@@ -13,15 +14,32 @@ public class Tower : MonoBehaviour
 
     [SerializeField] private GameObject _rangeCircle;
 
-    private float timeToShoot = 0.0f;
+    private float _timeToShoot = 0.0f;
 
-    private void Awake()
+    private Vector3 _rangeCircleScaleValue;
+    
+    #region Unity Events
+    
+    private void OnEnable()
     {
         // Set Range
-        var transformLocalScale = _rangeCircle.transform.localScale;
-        transformLocalScale.x = transformLocalScale.y = _towerBase.Range;
+        _rangeCircleScaleValue = new Vector3(_towerBase.Range, _towerBase.Range, _towerBase.Range);
+        SubscribeEvents();
     }
 
+    private void OnDisable()
+    {
+        UnsubscribeEvents();
+    }
+
+    private void OnMouseDown()
+    {
+        if (!_rangeCircle.activeSelf)
+        {
+            SetVisibilityOfRangeCircle(true);
+        }
+    }
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
         
@@ -42,7 +60,7 @@ public class Tower : MonoBehaviour
         {
             var angle = TurnToEnemy(enemy.transform.position);
             
-            if (timeToShoot < 0 && Mathf.Abs(angle) < 45)
+            if (_timeToShoot < 0 && Mathf.Abs(angle) < 45)
             {
                 var shell = LeanPool.Spawn(_towerBase.ShellPrefab);
                 shell.transform.position = transform.position; // + (transform.up * 40) 
@@ -61,7 +79,7 @@ public class Tower : MonoBehaviour
 
                 //Debug.Log("bullet fired");
                 
-                timeToShoot = _towerBase.FireRate;
+                _timeToShoot = _towerBase.FireRate;
 
                 if(_bulletFireEffect != null) _bulletFireEffect.SetActive(true);
                 
@@ -78,14 +96,18 @@ public class Tower : MonoBehaviour
             }
         }
 
-        if (_bulletFireEffect != null && timeToShoot < _towerBase.FireRate * 0.7f && _bulletFireEffect.activeSelf)
+        if (_bulletFireEffect != null && _timeToShoot < _towerBase.FireRate * 0.7f && _bulletFireEffect.activeSelf)
         {
             _bulletFireEffect.SetActive(false);
         }
         
-        timeToShoot -= Time.deltaTime;
+        _timeToShoot -= Time.deltaTime;
     }
     
+    #endregion
+
+    #region Tower Methods
+
     private float TurnToEnemy(Vector2 position)
     {
         var direction = position - (Vector2)transform.position;
@@ -93,4 +115,57 @@ public class Tower : MonoBehaviour
         transform.Rotate(0, 0, Mathf.Clamp(angle, -10, 10) * _towerBase.RotationSpeed * Time.deltaTime);
         return angle;   
     }
+
+    private void SetVisibilityOfRangeCircle(bool status)
+    {
+        if (status )
+        {
+            _rangeCircle.transform.DOScale(_rangeCircleScaleValue, .3f).
+                OnStart(() =>
+                {
+                    _rangeCircle.SetActive(true);
+                    _rangeCircle.GetComponent<SpriteRenderer>().DOFade(.4f, .3f);
+                });
+        }
+        else
+        {
+            _rangeCircle.transform.DOScale(Vector3.one, .3f).
+                OnStart(() =>
+                {
+                    _rangeCircle.GetComponent<SpriteRenderer>().DOFade(0, .3f);
+                }).
+                OnComplete((() =>
+                {
+                    _rangeCircle.SetActive(false);
+                }));
+        }
+    }
+
+    #endregion
+
+    #region Towers Event Callbacks
+
+    private void OnClickOutsideOfInteractiveArea(object obj)
+    {
+        if (_rangeCircle.activeSelf)
+        {
+            SetVisibilityOfRangeCircle(false);
+        }
+    }
+    
+    #endregion
+    
+    #region IEventManagerHandling Methods
+
+    public void SubscribeEvents()
+    {
+        EventManager.GetInstance().Subscribe(Events.ClickOutsideOfInteractiveArea, OnClickOutsideOfInteractiveArea);
+    }
+
+    public void UnsubscribeEvents()
+    {
+        EventManager.GetInstance().Unsubscribe(Events.ClickOutsideOfInteractiveArea, OnClickOutsideOfInteractiveArea);
+    }
+
+    #endregion
 }

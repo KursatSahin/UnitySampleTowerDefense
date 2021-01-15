@@ -1,3 +1,5 @@
+using System;
+
 namespace Common
 {
     /// <summary>
@@ -19,6 +21,7 @@ namespace Common
         public const string UpdateMoney = "UPDATE_MONEY";
         public const string UpdateRemainingLife = "UPDATE_REMAINING_LIFE";
         public const string EnemyKilled = "ENEMY_KILLED";
+        [Obsolete] public const string EnemyDied = "ENEMY_DIED";
         
         // GAME MANAGER
         public const string GameIsOver = "GAME_IS_OVER";

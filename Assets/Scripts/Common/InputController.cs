@@ -36,6 +36,7 @@ namespace Common
                 if (!hit)
                 {
                     Debug.Log("click outside");
+                    EventManager.GetInstance().Notify(Events.ClickOutsideOfInteractiveArea);
                     return;
                 }
                 

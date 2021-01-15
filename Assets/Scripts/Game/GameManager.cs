@@ -67,10 +67,20 @@ namespace DefaultNamespace
         {
             ServiceLocator.Instance.GetService<HudScreenController>().KilledEnemyAmount = ++_killedEnemy;
 
+            CheckGameIsEnd();
+        }
+
+        private void CheckGameIsEnd()
+        {
+            if (_lives <= 0)
+            {
+                Time.timeScale = 0;
+                EventManager.GetInstance().Notify(Events.GameIsOver,null,true);
+            }
+            
             if (_killedEnemy + (initialLives - _lives) >= _magicNumber)
             {
                 Time.timeScale = 0;
-                DOTween.timeScale = 0;
                 EventManager.GetInstance().Notify(Events.WonGame,null,true);
             }
         }
@@ -79,11 +89,7 @@ namespace DefaultNamespace
         {
             ServiceLocator.Instance.GetService<HudScreenController>().RemainingLives = _lives += (int) data;
 
-            if (_lives <= 0)
-            {
-                Time.timeScale = 0;
-                EventManager.GetInstance().Notify(Events.GameIsOver,null,true);
-            }
+            CheckGameIsEnd();
         }
 
         private void OnUpdateMoney(object data)
