@@ -1,36 +1,38 @@
 using System;
 using System.Runtime.CompilerServices;
+using Common;
 using Lean.Pool;
 using UnityEngine;
-using Utils;
 
 namespace Coin
 {
     public class CoinView : MonoBehaviour
     {
-        private int _amout = 0;
+        private int _amount = 0;
 
-        public int Amout
+        public int Amount
         {
-            get
-            {
-                return _amout;
-            }
-            set
-            {
-                _amout = value;
-            }
+            get => _amount;
+            set => _amount = value;
         }
 
+        #region Unity Events
+        
         private void OnDisable()
         {
-            IncreaseMoney(_amout);
+            IncreaseMoney(_amount);
         }
+        
+        #endregion
 
+        #region CoinView Methods
+        
         private void IncreaseMoney(int changeAmount)
         {
             EventManager.GetInstance().Notify(Events.UpdateMoney, changeAmount);
         }
+        
+        #endregion
     }
 
     public class CoinData

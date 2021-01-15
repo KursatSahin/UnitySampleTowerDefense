@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Common;
 using Lean.Pool;
 using Units;
 using UnityEngine;
-using Utils;
 
 public class Tower : MonoBehaviour
 {
@@ -49,13 +49,13 @@ public class Tower : MonoBehaviour
                 shell.transform.rotation = transform.rotation;
 
                 var shellData = shell.GetComponent<ShellBase>();
-                shellData.Speed = _towerBase.BulletSpeed;
-                shellData.Range = _towerBase.Range;
-                shellData.Direction = transform.transform.up;
-                shellData.Damage = _towerBase.Damage;
-                shellData.Target = enemy;
+                shellData.speed = _towerBase.BulletSpeed;
+                shellData.range = _towerBase.Range;
+                shellData.direction = transform.transform.up;
+                shellData.damage = _towerBase.Damage;
+                shellData.target = enemy;
                 //bulletScript.EnemyTags = _towerBase.enemyTags;
-                shellData.Turret = transform;
+                shellData.gunBarrel = transform;
 
                 shell.SetActive(true);
 
@@ -71,7 +71,11 @@ public class Tower : MonoBehaviour
         }
         else
         {
-            //TurnToEnemy(gameObject);
+            var possibleTarget = EnemyManager.GetInstance().GetClosestEnemyInRange(transform.position, _towerBase.Range * 2);
+            if (possibleTarget != null)
+            {
+                TurnToEnemy(possibleTarget.transform.position);
+            }
         }
 
         if (_bulletFireEffect != null && timeToShoot < _towerBase.FireRate * 0.7f && _bulletFireEffect.activeSelf)
@@ -85,7 +89,7 @@ public class Tower : MonoBehaviour
     private float TurnToEnemy(Vector2 position)
     {
         var direction = position - (Vector2)transform.position;
-        var angle = Utils.Utils.Angle(direction, transform.up);
+        var angle = Utils.Angle(direction, transform.up);
         transform.Rotate(0, 0, Mathf.Clamp(angle, -10, 10) * _towerBase.RotationSpeed * Time.deltaTime);
         return angle;   
     }

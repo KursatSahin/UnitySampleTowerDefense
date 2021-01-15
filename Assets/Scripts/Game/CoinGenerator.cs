@@ -1,14 +1,16 @@
 using System;
+using Common;
 using Lean.Pool;
 using UnityEditor;
 using UnityEngine;
-using Utils;
 
 namespace Coin
 {
     public class CoinGenerator : MonoBehaviour, IEventManagerHandling
     {
-        [SerializeField] private GameObject _coinPrefab;
+        [SerializeField] private GameObject coinPrefab;
+
+        #region Unity Events
         
         private void OnEnable()
         {
@@ -20,18 +22,26 @@ namespace Coin
             UnsubscribeEvents();
         }
         
+        #endregion
+
+        #region CoinGenerator Event Callbacks
+
         private void OnGenerateCoin(object data)
         {
             var coinData = data as CoinData;
-            var coinView = LeanPool.Spawn(_coinPrefab).GetComponent<CoinView>();
+            var coinView = LeanPool.Spawn(coinPrefab).GetComponent<CoinView>();
             
             //Debug.Log("Coin is generated");
 
             coinView.transform.position = coinData.Position;
-            coinView.Amout = coinData.Amount;
+            coinView.Amount = coinData.Amount;
             LeanPool.Despawn(coinView.gameObject, 2f);
         }
         
+        #endregion
+
+        #region IEventManagerHandling Methods
+
         public void SubscribeEvents()
         {
             EventManager.GetInstance().Subscribe(Events.GenerateCoin, OnGenerateCoin);
@@ -41,5 +51,7 @@ namespace Coin
         {
             EventManager.GetInstance().Unsubscribe(Events.GenerateCoin, OnGenerateCoin);
         }
+
+        #endregion
     }
 }

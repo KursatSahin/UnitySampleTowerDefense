@@ -1,11 +1,9 @@
-using System;
 using Coin;
-using DG.Tweening;
 using Lean.Pool;
 using Units;
 using UnityEngine;
 
-namespace Utils
+namespace Common
 {
     public class InputController : MonoBehaviour
     {
@@ -56,7 +54,7 @@ namespace Utils
                 else if (hit.collider.TryGetComponent(out CoinView coin))
                 {
                     Debug.Log("Coin is clicked");
-                    var extraCoin = coin.Amout;
+                    var extraCoin = coin.Amount;
                     LeanPool.Despawn(coin.gameObject);
                     EventManager.GetInstance().Notify(Events.UpdateMoney, extraCoin);
                 }

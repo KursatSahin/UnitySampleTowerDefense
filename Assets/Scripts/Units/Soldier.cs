@@ -1,14 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Coin;
+using Common;
 using DG.Tweening;
 using Lean.Pool;
-using Lean.Touch;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
-using Utils;
 
 namespace Units
 {
@@ -46,11 +42,10 @@ namespace Units
 
         private void GetDamaged(ShellBase shell)
         {
-            //Debug.Log($"{this.name}.{nameof(GetDamaged)}() is called");
             // Despawn bullet
             LeanPool.Despawn(shell.gameObject);
             // Decrease health of soldier
-            _healthBar.value = _health -= shell.Damage;
+            _healthBar.value = _health -= shell.damage;
             // If necessary kill soldier
             if (_health <= 0)
             {
@@ -68,9 +63,9 @@ namespace Units
             if (isKilled)
             {
                 EventManager.GetInstance().Notify(Events.EnemyKilled);
-                EventManager.GetInstance().Notify(Events.GenerateCoin, 
-                    new CoinData(this.transform.position, (int)enemyBase.maxHealth / 5));
+                EventManager.GetInstance().Notify(Events.GenerateCoin, new CoinData(this.transform.position, (int)enemyBase.maxHealth / 5));
             }
+
             // TODO : play animation or tween here;
         }
 

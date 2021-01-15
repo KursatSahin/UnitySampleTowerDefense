@@ -1,10 +1,10 @@
 using UnityEngine;
 
-namespace Utils
+namespace Common
 {
     public static class Utils
     {
-        static public float Angle(Vector2 a, Vector2 b)
+        public static float Angle(Vector2 a, Vector2 b)
         {
             var an = a.normalized;
             var bn = b.normalized;

@@ -1,4 +1,4 @@
-namespace Utils
+namespace Common
 {
     /// <summary>
     /// Events class contains all constant variables to be used by our custom event handler class

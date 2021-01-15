@@ -5,7 +5,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Collider2D))]
-public class Waypoint : MonoBehaviour
+public sealed class Waypoint : MonoBehaviour
 {
     [SerializeField] private List<Waypoint> nextWaypoint;
     [SerializeField] private WaypointType wType = WaypointType.Mid;

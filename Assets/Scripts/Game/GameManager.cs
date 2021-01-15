@@ -1,17 +1,17 @@
+using Common;
 using DG.Tweening;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Utils;
 
 namespace DefaultNamespace
 {
     public class GameManager : MonoBehaviour, IEventManagerHandling
     {
-        [SerializeField] private int _initialLives = 3;
-        [SerializeField] private int _initialMoney = 300;
+        [SerializeField] private int initialLives = 3;
+        [SerializeField] private int initialMoney = 300;
         
-        [SerializeField] private GameObject _splashScreen;
+        [SerializeField] private GameObject splashScreen;
 
         private int _killedEnemy = 0;
         private int _lives = 0;
@@ -19,6 +19,8 @@ namespace DefaultNamespace
 
         private int _magicNumber = 0;
         
+        #region Unity Events
+
         private void OnEnable()
         {
             SubscribeEvents();
@@ -33,18 +35,22 @@ namespace DefaultNamespace
         {
             Init();
 
-            _splashScreen.GetComponent<CanvasGroup>().DOFade(0,.5f).SetDelay(1.5f).
+            splashScreen.GetComponent<CanvasGroup>().DOFade(0,.5f).SetDelay(1.5f).
                 OnComplete((() =>
                 {
-                    _splashScreen.SetActive(false);
+                    splashScreen.SetActive(false);
                     EventManager.GetInstance().Notify(Events.StartGame);
                 }));
         }
 
+        #endregion
+
+        #region GameManager Methods
+        
         private void Init()
         {
-            _money =_initialMoney;
-            _lives = _initialLives;
+            _money =initialMoney;
+            _lives = initialLives;
             _killedEnemy = 0;
             _magicNumber = ServiceLocator.Instance.GetService<WaveGenerator>().TotalUnitCount();
 
@@ -52,12 +58,16 @@ namespace DefaultNamespace
             ServiceLocator.Instance.GetService<HudScreenController>().RemainingLives = _lives;
             ServiceLocator.Instance.GetService<HudScreenController>().KilledEnemyAmount = _killedEnemy;
         }
+        
+        #endregion
+
+        #region GameManager Event Callbacks
 
         private void OnEnemyKilled(object _)
         {
             ServiceLocator.Instance.GetService<HudScreenController>().KilledEnemyAmount = ++_killedEnemy;
 
-            if (_killedEnemy + (_initialLives - _lives) >= _magicNumber)
+            if (_killedEnemy + (initialLives - _lives) >= _magicNumber)
             {
                 Time.timeScale = 0;
                 DOTween.timeScale = 0;
@@ -87,9 +97,14 @@ namespace DefaultNamespace
             DOTween.timeScale = 0;
             DOTween.KillAll(false);
             EventManager.GetInstance().Destroy();
+            EnemyManager.GetInstance().Destroy();
             SceneManager.LoadSceneAsync("EntryScene");
         }
 
+        #endregion
+        
+        #region IEventManagerHandling Methods
+        
         public void SubscribeEvents()
         {
             EventManager.GetInstance().Subscribe(Events.UpdateMoney, OnUpdateMoney);
@@ -105,5 +120,7 @@ namespace DefaultNamespace
             EventManager.GetInstance().Unsubscribe(Events.EnemyKilled, OnEnemyKilled);
             EventManager.GetInstance().Unsubscribe(Events.RestartGame, OnRestartGame);
         }
+        
+        #endregion
     }
 }

@@ -1,6 +1,6 @@
 using System;
+using Common;
 using UnityEngine;
-using Utils;
 
 namespace DefaultNamespace
 {
@@ -11,9 +11,11 @@ namespace DefaultNamespace
         private float _currentGameTime;
         private float _tmpTime;
 
-        public float CurrentGameTime { get; }
+        public float CurrentGameTime { get=>_currentGameTime; }
 
-        private bool isPaused = false;
+        private bool _isPaused = false;
+
+        #region Unity Events
 
         private void OnEnable()
         {
@@ -35,7 +37,7 @@ namespace DefaultNamespace
 
         private void Update()
         {
-            if(isPaused)
+            if(_isPaused)
                 return;
                 
             _tmpTime += Time.deltaTime;
@@ -46,29 +48,41 @@ namespace DefaultNamespace
                 _currentGameTime += tickDuration;
                 EventManager.GetInstance().Notify(Events.TimeTickUpdated, _currentGameTime, false);
             }
-        }
+        }        
 
+        #endregion
+
+        #region Timer Methods
+        
         public void Pause()
         {
-            isPaused = true;
+            _isPaused = true;
         }
         
         public void Continue()
         {
-            isPaused = false;
+            _isPaused = false;
         }
 
         public void Play()
         {
-            isPaused = false;
+            _isPaused = false;
             _currentGameTime = 0;
         }
+        
+        #endregion
+
+        #region Timer Event Callbacks
 
         private void OnStartGame(object obj)
         {
             Play();
         }
+
+        #endregion
         
+        #region IEventManagerHandling Methods
+
         public void SubscribeEvents()
         {
             EventManager.GetInstance().Subscribe(Events.StartGame, OnStartGame);
@@ -78,5 +92,7 @@ namespace DefaultNamespace
         {
             EventManager.GetInstance().Unsubscribe(Events.StartGame, OnStartGame);
         }
+        
+        #endregion
     }
 }
