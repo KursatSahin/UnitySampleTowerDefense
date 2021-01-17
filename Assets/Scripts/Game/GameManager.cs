@@ -1,5 +1,6 @@
 using Common;
 using DG.Tweening;
+using Lean.Pool;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -107,6 +108,7 @@ namespace Game
         {
             DOTween.timeScale = 0;
             DOTween.KillAll(false);
+            LeanPool.DespawnAll();
             EventManager.GetInstance().Destroy();
             EnemyManager.GetInstance().Destroy();
             SceneManager.LoadSceneAsync("EntryScene");

@@ -94,7 +94,7 @@ namespace UI
                     _eventPrice = Utils.GetUpgradePrice(_currentTower); break;
             }
             
-            _title.text = $"{nameof(_maintenanceType)}";
+            _title.text = $"{_maintenanceType.ToString()}";
             _price.text = $"${-_eventPrice}";
 
             CheckEnoughMoney();
