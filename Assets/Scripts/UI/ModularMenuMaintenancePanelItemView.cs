@@ -1,10 +1,8 @@
 using System;
 using Common;
-using DefaultNamespace;
 using Game;
 using TMPro;
 using Towers;
-using Units;
 using UnityEngine;
 using UnityEngine.UI;
 

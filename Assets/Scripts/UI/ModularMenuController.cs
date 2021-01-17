@@ -4,9 +4,7 @@ using Common;
 using Game;
 using Lean.Pool;
 using Towers;
-using Units;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {

@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using Coin;
 using Common;
 using DG.Tweening;
 using Lean.Pool;
 using Shells;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Units
 {

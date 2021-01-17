@@ -1,7 +1,5 @@
-using System;
 using Common;
 using Lean.Pool;
-using UnityEditor;
 using UnityEngine;
 
 namespace Coin
