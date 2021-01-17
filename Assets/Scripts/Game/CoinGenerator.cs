@@ -8,7 +8,7 @@ namespace Coin
 {
     public class CoinGenerator : MonoBehaviour, IEventManagerHandling
     {
-        [SerializeField] private GameObject coinPrefab;
+        [SerializeField] private GameObject _coinPrefab;
 
         #region Unity Events
         
@@ -29,13 +29,13 @@ namespace Coin
         private void OnGenerateCoin(object data)
         {
             var coinData = data as CoinData;
-            var coinView = LeanPool.Spawn(coinPrefab).GetComponent<CoinView>();
+            var coinView = LeanPool.Spawn(_coinPrefab).GetComponent<CoinView>();
             
             //Debug.Log("Coin is generated");
 
             coinView.transform.position = coinData.Position;
             coinView.Amount = coinData.Amount;
-            LeanPool.Despawn(coinView.gameObject, 2f);
+            LeanPool.Despawn(coinView.gameObject, 3f);
         }
         
         #endregion

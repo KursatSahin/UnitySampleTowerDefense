@@ -7,97 +7,100 @@ using DG.Tweening.Plugins.Core.PathCore;
 using Lean.Pool;
 using UnityEngine;
 
-public class WaveGenerator : MonoBehaviour, IEventManagerHandling
+namespace Game
 {
-    [SerializeField] private List<Wave> waves;
-    [SerializeField] private Transform spawnPoint;
-    [SerializeField] private Transform unitsParent;
-
-    private int _currentWaveNumber = 0;
-
-    #region Unity Events
-
-    private void OnEnable()
+    public class WaveGenerator : MonoBehaviour, IEventManagerHandling
     {
-        SubscribeEvents();
-    }
+        [SerializeField] private List<Wave> _waves;
+        [SerializeField] private Transform _spawnPoint;
+        [SerializeField] private Transform _unitsParent;
 
-    private void OnDisable()
-    {
-        UnsubscribeEvents();
-    }
+        private int _currentWaveNumber = 0;
 
-    #endregion
-    
-    #region WaveGenerator Methods
+        #region Unity Events
 
-    public int TotalUnitCount()
-    {
-        int totalAmount = 0;
-        
-        foreach (var wave in waves)
+        private void OnEnable()
         {
-            totalAmount += wave.unitAmount;
+            SubscribeEvents();
         }
-        
-        return totalAmount;
-    }
-    
-    private IEnumerator GenerateWave(Wave wave)
-    {
-        for (int i = 0; i < wave.unitAmount; i++)
+
+        private void OnDisable()
         {
-            var soldier = LeanPool.Spawn(wave.unitPrefab, spawnPoint.position, Quaternion.Euler(0,0,0), unitsParent);
-            EnemyManager.GetInstance().AddEnemy(soldier);
-            yield return new WaitForSeconds(wave.delayTimeBetweenSpawns);
+            UnsubscribeEvents();
         }
-    }    
 
-    #endregion
+        #endregion
     
-    #region WaveGenerator Event Callbacks
+        #region WaveGenerator Methods
 
-    private void OnTimeTickUpdated(object data)
-    {
-        var time = (float) data;
-
-        var subList = waves.FindAll(x => x.startingTime < time);
-
-        if (subList.Count > 0)
+        public int TotalUnitCount()
         {
-            _currentWaveNumber++;
-            EventManager.GetInstance().Notify(Events.WaveStartedToBeGenerated, _currentWaveNumber);
-            
-            foreach (var waveItem in subList)
+            int totalAmount = 0;
+        
+            foreach (var wave in _waves)
             {
-                StartCoroutine(GenerateWave(waveItem));
-                waves.Remove(waveItem);
+                totalAmount += wave.unitAmount;
+            }
+        
+            return totalAmount;
+        }
+    
+        private IEnumerator GenerateWave(Wave wave)
+        {
+            for (int i = 0; i < wave.unitAmount; i++)
+            {
+                var soldier = LeanPool.Spawn(wave.unitPrefab, _spawnPoint.position, Quaternion.Euler(0,0,0), _unitsParent);
+                EnemyManager.GetInstance().AddEnemy(soldier);
+                yield return new WaitForSeconds(wave.delayTimeBetweenSpawns);
+            }
+        }    
+
+        #endregion
+    
+        #region WaveGenerator Event Callbacks
+
+        private void OnTimeTickUpdated(object data)
+        {
+            var time = (float) data;
+
+            var subList = _waves.FindAll(x => x.startingTime < time);
+
+            if (subList.Count > 0)
+            {
+                _currentWaveNumber++;
+                EventManager.GetInstance().Notify(Events.WaveStartedToBeGenerated, _currentWaveNumber);
+            
+                foreach (var waveItem in subList)
+                {
+                    StartCoroutine(GenerateWave(waveItem));
+                    _waves.Remove(waveItem);
+                }
             }
         }
-    }
 
-    #endregion
+        #endregion
     
-    #region EventManagerHandling Methods
+        #region EventManagerHandling Methods
 
-    public void SubscribeEvents()
+        public void SubscribeEvents()
+        {
+            EventManager.GetInstance().Subscribe(Events.TimeTickUpdated, OnTimeTickUpdated);
+        }
+
+        public void UnsubscribeEvents()
+        {
+            EventManager.GetInstance().Unsubscribe(Events.TimeTickUpdated, OnTimeTickUpdated);
+        }
+    
+        #endregion
+    }
+    
+    [System.Serializable]
+    public sealed class Wave
     {
-        EventManager.GetInstance().Subscribe(Events.TimeTickUpdated, OnTimeTickUpdated);
+        public int unitAmount;
+        public GameObject unitPrefab;
+        public float startingTime;
+        public float delayTimeBetweenSpawns;
     }
-
-    public void UnsubscribeEvents()
-    {
-        EventManager.GetInstance().Unsubscribe(Events.TimeTickUpdated, OnTimeTickUpdated);
-    }
-    
-    #endregion
-}
-    
-[System.Serializable]
-public sealed class Wave
-{
-    public int unitAmount;
-    public GameObject unitPrefab;
-    public float startingTime;
-    public float delayTimeBetweenSpawns;
 }

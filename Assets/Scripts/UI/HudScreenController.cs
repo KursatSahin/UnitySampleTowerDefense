@@ -7,9 +7,7 @@ namespace UI
 {
     public class HudScreenController : MonoBehaviour
     {
-        //public static HudScreenController Instance;
-
-        [SerializeField] private GameObject uiView;
+        [SerializeField] private GameObject _uiView;
     
         [SerializeField] private TextMeshProUGUI _moneyAmountText;
         [SerializeField] private TextMeshProUGUI _remainingLifeText;
@@ -49,10 +47,6 @@ namespace UI
                 _killedEnemyAmountText.text = $"{_killedEnemyAmount}";
             }
         }
-
-        private void Awake()
-        {
-            //Instance = this;
-        }
+        
     }
 }

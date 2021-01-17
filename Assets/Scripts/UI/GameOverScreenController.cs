@@ -7,23 +7,23 @@ namespace UI
 {
     public class GameOverScreenController : MonoBehaviour, IEventManagerHandling
     {
-        [SerializeField] private GameObject uiView;
+        [SerializeField] private GameObject _uiView;
         
         [Header("UI Elements")]
-        [SerializeField] private TextMeshProUGUI gameoverMessage;
-        [SerializeField] private Button restartGameButton;
+        [SerializeField] private TextMeshProUGUI _gameoverMessage;
+        [SerializeField] private Button _restartGameButton;
 
         #region Unity Events
         
         private void Awake()
         {
-            restartGameButton.onClick.AddListener(OnRestartGameButtonClicked);
+            _restartGameButton.onClick.AddListener(OnRestartGameButtonClicked);
             SubscribeEvents();
         }
 
         private void OnDestroy()
         {
-            restartGameButton.onClick.RemoveListener(OnRestartGameButtonClicked);
+            _restartGameButton.onClick.RemoveListener(OnRestartGameButtonClicked);
             UnsubscribeEvents();
         }
 
@@ -52,12 +52,12 @@ namespace UI
         
         private void Show()
         {
-            uiView.SetActive(true);
+            _uiView.SetActive(true);
         }
 
         private void Hide()
         {
-            uiView.SetActive(false);
+            _uiView.SetActive(false);
         }
         
         private void OnRestartGameButtonClicked()

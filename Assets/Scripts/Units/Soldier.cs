@@ -3,6 +3,7 @@ using Coin;
 using Common;
 using DG.Tweening;
 using Lean.Pool;
+using Shells;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,51 +11,41 @@ namespace Units
 {
     public class Soldier : Enemy
     {
-        [SerializeField] private GameObject _soldierView;
-        [SerializeField] private float _health;
-        [SerializeField] private Slider _healthBar;
+        #region Unity Events
 
-        private Queue<Waypoint> _movementPath;
-        
-        private int _lastPassedWaypointIndex = 0;
-
-        private void OnEnable()
+        protected override void OnTriggerEnter2D(Collider2D other)
         {
-            Initialize();
-        }
-
-        public void Initialize()
-        {
-            _healthBar.value = _healthBar.maxValue = _health = enemyBase.maxHealth;
-            _movementPath = new Queue<Waypoint>();
-        }
-
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            //Debug.Log($"{this.name}.{nameof(OnTriggerEnter2D)}() is called");
-            
             if (other.transform.TryGetComponent(out Waypoint waypoint))
                 AddWaypointToMovementPath(waypoint);
             
             if (other.transform.TryGetComponent(out ShellBase shell))
                 GetDamaged(shell);
         }
+        
+        #endregion
 
-        private void GetDamaged(ShellBase shell)
+        #region Soldier Methods
+
+        protected override void GetDamaged(ShellBase shell)
         {
+            if (_isDied)
+                return;
+                
             // Despawn bullet
-            LeanPool.Despawn(shell.gameObject,.1f);   
+            LeanPool.Despawn(shell.gameObject);   
             
             // Decrease health of soldier
             _healthBar.value = _health -= shell.damage;
+            
             // If necessary kill soldier
             if (_health <= 0)
             {
+                _isDied = true;
                 Die(true);
             }
         }
         
-        private void Die(bool isKilled = false, float delay = 0)
+        protected override void Die(bool isKilled = false, float delay = 0)
         {
             transform.DOKill(false);
             gameObject.SetActive(false);
@@ -64,19 +55,18 @@ namespace Units
             if (isKilled)
             {
                 EventManager.GetInstance().Notify(Events.EnemyKilled);
-                EventManager.GetInstance().Notify(Events.GenerateCoin, new CoinData(this.transform.position, (int)enemyBase.maxHealth / 5));
+                EventManager.GetInstance().Notify(Events.GenerateCoin, new CoinData(this.transform.position, enemyBase.Prize));
             }
             
             // TODO : play animation or tween here;
         }
 
-        private void AddWaypointToMovementPath(Waypoint waypoint)
+        protected override void AddWaypointToMovementPath(Waypoint waypoint)
         {
             if (waypoint.WType == Waypoint.WaypointType.Finish)
             {
                 UpdateRemainingLife(-1);
                 Die();
-                return;
             }
             else if (waypoint.WType == Waypoint.WaypointType.Start)
             {
@@ -87,25 +77,19 @@ namespace Units
             {
                 _movementPath.Enqueue(waypoint.GetNextWaypoint());
             }
-            
         }
 
-        private void UpdateRemainingLife(int updateAmount)
-        {
-            EventManager.GetInstance().Notify(Events.UpdateRemainingLife, updateAmount);
-        }
-
-        private void Move()
+        protected override void Move()
         {
             var target = _movementPath.Peek();
             var distance = Vector3.Distance(transform.position, target.transform.position);
-            var duration = distance / enemyBase.movementSpeed;
+            var duration = distance / enemyBase.MovementSpeed;
             
             var diff = target.transform.position - transform.position;
             var angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
 
             // Rotate Soldier View
-            _soldierView.transform.DORotateQuaternion(Quaternion.Euler(0, 0, angle), .2f);
+            _enemyView.transform.DORotateQuaternion(Quaternion.Euler(0, 0, angle), .2f);
             // Move Soldier Container (View + Canvas)
             transform.DOMove(target.transform.position, duration).SetEase(Ease.Linear).
                 OnUpdate(() =>
@@ -124,6 +108,8 @@ namespace Units
                     }
                 }));
         }
+        
+        #endregion
         
     }
 }

@@ -1,18 +1,20 @@
-using System.Collections.Generic;
 using Lean.Pool;
 using UnityEngine;
 
-public abstract class ShellBase : MonoBehaviour
+namespace Shells
 {
-    [HideInInspector] public float speed;
-    [HideInInspector] public Vector2 direction;
-    [HideInInspector] public GameObject target;
-    [HideInInspector] public float range;
-    [HideInInspector] public float damage;
-    [HideInInspector] public Transform gunBarrel;
-
-    public virtual void Explode()
+    public abstract class ShellBase : MonoBehaviour
     {
-        LeanPool.Despawn(gameObject);
+        [HideInInspector] public float speed;
+        [HideInInspector] public Vector2 direction;
+        [HideInInspector] public GameObject target;
+        [HideInInspector] public float range;
+        [HideInInspector] public float damage;
+        [HideInInspector] public Transform gunBarrel;
+
+        protected virtual void Explode()
+        {
+            LeanPool.Despawn(gameObject);
+        }
     }
 }

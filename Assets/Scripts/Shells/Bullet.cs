@@ -1,29 +1,29 @@
-﻿using System;
-using UnityEngine;
-using Lean.Pool;
-using Units;
+﻿using UnityEngine;
 
-public class Bullet : ShellBase
-{   
-    private float _distance;
+namespace Shells
+{
+    public class Bullet : ShellBase
+    {   
+        private float _distance;
 
-    #region Unity Events
+        #region Unity Events
     
-	void OnEnable ()
-    {
-        _distance = 0.0f;
-    }
-
-	void FixedUpdate ()
-    {
-        var diff = Time.deltaTime * speed;
-        _distance += diff;
-        transform.position += (Vector3)direction * diff;
-
-        if(_distance > range)
+        void OnEnable ()
         {
-            Explode();
+            _distance = 0.0f;
         }
-	}
-    #endregion
+
+        void FixedUpdate ()
+        {
+            var diff = Time.deltaTime * speed;
+            _distance += diff;
+            transform.position += (Vector3)direction * diff;
+
+            if(_distance > range)
+            {
+                Explode();
+            }
+        }
+        #endregion
+    }
 }

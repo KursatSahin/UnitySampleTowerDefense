@@ -8,17 +8,17 @@ namespace UI
 {
     public class MainMenuController : MonoBehaviour
     {
-        [SerializeField] private GameObject uiView;
+        [SerializeField] private GameObject _uiView;
         
         [Header("UI Elements")]
-        [SerializeField] private TextMeshProUGUI gameTitle;
-        [SerializeField] private Button startGameButton;
+        [SerializeField] private TextMeshProUGUI _gameTitle;
+        [SerializeField] private Button _startGameButton;
 
         #region Unity Events
         
         private void Awake()
         {
-            startGameButton.onClick.AddListener(OnStartGameButtonClicked);
+            _startGameButton.onClick.AddListener(OnStartGameButtonClicked);
             
             DOTween.timeScale = 1;
             Time.timeScale = 1;
@@ -28,7 +28,7 @@ namespace UI
 
         private void OnDestroy()
         {
-            startGameButton.onClick.RemoveListener(OnStartGameButtonClicked);
+            _startGameButton.onClick.RemoveListener(OnStartGameButtonClicked);
         }
 
         #endregion
@@ -37,7 +37,7 @@ namespace UI
 
         private void OnStartGameButtonClicked()
         {
-            uiView.SetActive(false);
+            _uiView.SetActive(false);
             SceneManager.LoadScene("GameScene");
         }
         

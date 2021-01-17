@@ -3,10 +3,11 @@ using System.Runtime.CompilerServices;
 using Common;
 using Lean.Pool;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Coin
 {
-    public class CoinView : MonoBehaviour
+    public class CoinView : MonoBehaviour, IPointerClickHandler
     {
         private int _amount = 0;
 
@@ -23,13 +24,19 @@ namespace Coin
             IncreaseMoney(_amount);
         }
         
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            _amount *= 2;
+            LeanPool.Despawn(gameObject);
+        }
+        
         #endregion
 
         #region CoinView Methods
         
         private void IncreaseMoney(int changeAmount)
         {
-            EventManager.GetInstance().Notify(Events.UpdateMoney, changeAmount);
+            EventManager.GetInstance().Notify(Events.ChangeMoneyAmout, changeAmount);
         }
         
         #endregion

@@ -1,12 +1,11 @@
-using System;
 using Common;
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace Game
 {
     public class Timer : MonoBehaviour, IEventManagerHandling
     {
-        [SerializeField] [Range(.1f, 1)] private float tickDuration;
+        [SerializeField] [Range(.1f, 1)] private float _tickDuration;
         
         private float _currentGameTime;
         private float _tmpTime;
@@ -42,10 +41,10 @@ namespace DefaultNamespace
                 
             _tmpTime += Time.deltaTime;
             
-            if (_tmpTime > tickDuration)
+            if (_tmpTime > _tickDuration)
             {
-                _tmpTime -= tickDuration;
-                _currentGameTime += tickDuration;
+                _tmpTime -= _tickDuration;
+                _currentGameTime += _tickDuration;
                 EventManager.GetInstance().Notify(Events.TimeTickUpdated, _currentGameTime, false);
             }
         }        

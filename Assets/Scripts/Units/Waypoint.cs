@@ -7,17 +7,17 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(Collider2D))]
 public sealed class Waypoint : MonoBehaviour
 {
-    [SerializeField] private List<Waypoint> nextWaypoint;
-    [SerializeField] private WaypointType wType = WaypointType.Mid;
+    [SerializeField] private List<Waypoint> _nextWaypoint;
+    [SerializeField] private WaypointType _wType = WaypointType.Mid;
 
-    public WaypointType WType => wType;
+    public WaypointType WType => _wType;
     
     public Waypoint GetNextWaypoint()
     {
-        if (nextWaypoint.Count <= 0)
+        if (_nextWaypoint.Count <= 0)
             throw new Exception("next waypoint is missing");
         
-        return nextWaypoint[Random.Range(0, nextWaypoint.Count)];
+        return _nextWaypoint[Random.Range(0, _nextWaypoint.Count)];
     }
 
     public enum WaypointType

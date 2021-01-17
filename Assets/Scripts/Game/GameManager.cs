@@ -4,20 +4,24 @@ using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace DefaultNamespace
+namespace Game
 {
     public class GameManager : MonoBehaviour, IEventManagerHandling
     {
-        [SerializeField] private int initialLives = 3;
-        [SerializeField] private int initialMoney = 300;
+        [SerializeField] private GameValues _gameValues; 
         
-        [SerializeField] private GameObject splashScreen;
+        [SerializeField] private GameObject _splashScreen;
 
         private int _killedEnemy = 0;
         private int _lives = 0;
         private int _money = 0;
-
+        
         private int _magicNumber = 0;
+
+        public int Money
+        {
+            get => _money;
+        }
         
         #region Unity Events
 
@@ -35,10 +39,10 @@ namespace DefaultNamespace
         {
             Init();
 
-            splashScreen.GetComponent<CanvasGroup>().DOFade(0,.5f).SetDelay(1.5f).
+            _splashScreen.GetComponent<CanvasGroup>().DOFade(0,.5f).SetDelay(1.5f).
                 OnComplete((() =>
                 {
-                    splashScreen.SetActive(false);
+                    _splashScreen.SetActive(false);
                     EventManager.GetInstance().Notify(Events.StartGame);
                 }));
         }
@@ -49,8 +53,9 @@ namespace DefaultNamespace
         
         private void Init()
         {
-            _money =initialMoney;
-            _lives = initialLives;
+            _lives = _gameValues.InitialLives;
+            _money = _gameValues.InitialMoney;
+            
             _killedEnemy = 0;
             _magicNumber = ServiceLocator.Instance.GetService<WaveGenerator>().TotalUnitCount();
 
@@ -78,7 +83,7 @@ namespace DefaultNamespace
                 EventManager.GetInstance().Notify(Events.GameIsOver,null,true);
             }
             
-            if (_killedEnemy + (initialLives - _lives) >= _magicNumber)
+            if (_killedEnemy + (_gameValues.InitialLives - _lives) >= _magicNumber)
             {
                 Time.timeScale = 0;
                 EventManager.GetInstance().Notify(Events.WonGame,null,true);
@@ -113,16 +118,16 @@ namespace DefaultNamespace
         
         public void SubscribeEvents()
         {
-            EventManager.GetInstance().Subscribe(Events.UpdateMoney, OnUpdateMoney);
-            EventManager.GetInstance().Subscribe(Events.UpdateRemainingLife, OnUpdateRemainingLife);
+            EventManager.GetInstance().Subscribe(Events.ChangeMoneyAmout, OnUpdateMoney);
+            EventManager.GetInstance().Subscribe(Events.ChangeRemainingLifeAmount, OnUpdateRemainingLife);
             EventManager.GetInstance().Subscribe(Events.EnemyKilled, OnEnemyKilled);
             EventManager.GetInstance().Subscribe(Events.RestartGame, OnRestartGame);
         }
         
         public void UnsubscribeEvents()
         {
-            EventManager.GetInstance().Unsubscribe(Events.UpdateMoney, OnUpdateMoney);
-            EventManager.GetInstance().Unsubscribe(Events.UpdateRemainingLife, OnUpdateRemainingLife);
+            EventManager.GetInstance().Unsubscribe(Events.ChangeMoneyAmout, OnUpdateMoney);
+            EventManager.GetInstance().Unsubscribe(Events.ChangeRemainingLifeAmount, OnUpdateRemainingLife);
             EventManager.GetInstance().Unsubscribe(Events.EnemyKilled, OnEnemyKilled);
             EventManager.GetInstance().Unsubscribe(Events.RestartGame, OnRestartGame);
         }
